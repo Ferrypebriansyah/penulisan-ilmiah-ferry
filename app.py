@@ -8,7 +8,7 @@ insights = {
     "hijau": "Pisang dengan tingkat kematangan **Hijau** baik untuk mengontrol gula darah karena tinggi pati resisten dan menjaga kesehatan pencernaan.",
     "kuning": "Pisang dengan tingkat kematangan **Kuning** bermanfaat sebagai sumber energi yang ideal, kaya potasium untuk kesehatan jantung dan serat untuk pencernaan.",
     "kuning bintik cokelat": "Pisang dengan tingkat kematangan **Kuning bintik cokelat** sangat mudah dicerna, kaya antioksidan, dan memiliki kandungan yang baik untuk imunitas.",
-    "cokelat": "Pisang dengan tingkat kematangan **cokelat** memiliki kandungan gula dan antioksidan sangat tinggi, sempurna untuk pemanis alami pada makanan."
+    "cokelat": "Pisang dengan tingkat kematangan **Cokelat** memiliki kandungan gula dan antioksidan sangat tinggi, sempurna untuk pemanis alami pada makanan."
 }
 
 detailed_benefits = {
@@ -39,9 +39,13 @@ detailed_benefits = {
 # ===== MUAT MODEL (.h5) =====
 try:
     model = tf.keras.models.load_model("model_mobilenetv2_2.h5")
+    st.info("✅ Model berhasil dimuat.")
 except Exception as e:
     st.error(f"❌ Gagal memuat model: {e}")
     st.stop()
+
+# Tampilkan info input model
+print("Model expects", len(model.inputs), "input(s).")
 
 # ===== LABEL MANUAL SESUAI URUTAN TRAINING =====
 labels = ['cokelat', 'hijau', 'kuning', 'kuning bintik cokelat', 'unknown']
@@ -64,11 +68,14 @@ def classify_image(image):
     img_array = np.array(img) / 255.0
     img_array = np.expand_dims(img_array, axis=0)  # (1, 150, 150, 3)
 
-    # Klasifikasi
-    prediction = model.predict(img_array)
+    # Deteksi jumlah input yang diharapkan oleh model
+    if len(model.inputs) == 2:
+        prediction = model.predict([img_array, img_array])  # kirim 2 input identik
+    else:
+        prediction = model.predict(img_array)
+
     max_index = np.argmax(prediction)
     return labels[max_index], prediction[0][max_index]
-
 
 # ===== SIDEBAR =====
 with st.sidebar:
@@ -86,7 +93,6 @@ if menu == "Klasifikasi Pisang":
     - Gunakan **gambar dari sudut yang tepat** agar bentuk dan warna terlihat.
     - Jika hasil tidak sesuai, kemungkinan disebabkan oleh **kualitas gambar yang kurang bagus**.
     """)
-
     
     uploaded_file = st.file_uploader("Unggah gambar", type=["jpg", "jpeg", "png"])
     
