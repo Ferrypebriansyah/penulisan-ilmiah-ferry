@@ -79,7 +79,7 @@ def classify_image(image):
 
 # ===== SIDEBAR =====
 with st.sidebar:
-    st.image("pisang.png", use_category_width=True)
+    st.image("pisang.png", use_column_width=True)
     st.header("🍌 Klasifikasi Tingkat Kematangan Pisang 🍌")
     menu = st.radio("Pilih Menu", ["Detail Manfaat Pisang", "Klasifikasi Pisang"])
 
@@ -98,7 +98,7 @@ if menu == "Klasifikasi Pisang":
     
     if uploaded_file is not None:
         image = Image.open(uploaded_file)
-        st.image(image, caption="Gambar yang diunggah", use_category_width=True)
+        st.image(image, caption="Gambar yang diunggah", use_column_width=True)
         st.write("---")
         with st.spinner("Sedang melakukan klasifikasi...🔍"):
             label, prob = classify_image(image)
